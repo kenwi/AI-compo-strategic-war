@@ -75,3 +75,8 @@ examples/.*
 
 # Some spcial files
 *kim-thesis.pdf
+/delivered-clients/StoneGhost.Core/obj/x86
+/delivered-clients/StoneGhost/.vs
+/delivered-clients/StoneGhost/StoneGhost/obj
+*.pfx
+/delivered-clients/StoneGhost/UpgradeLog.htm
