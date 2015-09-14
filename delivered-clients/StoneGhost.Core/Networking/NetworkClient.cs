@@ -6,6 +6,7 @@ using Windows.Networking;
 using Windows.Networking.Connectivity;
 using Windows.Networking.Sockets;
 using Windows.Storage.Streams;
+using StoneGhost.Core.AI;
 
 namespace StoneGhost.Core.Networking
 {
@@ -19,18 +20,20 @@ namespace StoneGhost.Core.Networking
 
         public string Message { get; private set; }
         public StreamSocket Socket { get; private set; }
+        public AiClient AiClient { get; private set; }
 
-        public NetworkClient(string host, string port)
+        public NetworkClient(string host, string port, AiClient aiClient)
         {
             _host = host;
             _port = port;
+            AiClient = aiClient;
         }
 
         public async Task<string> StartClientAsync()
         {
             await Connect(_host, _port);
 
-            await SendAsync("name Stoneghost\n"); // TODO: Fix name
+            await SendAsync(AiClient.Name);
 
             var task = ReadAsync(Socket);
             var result = await task;
@@ -41,12 +44,12 @@ namespace StoneGhost.Core.Networking
 
         private static async Task<byte[]> ReadAsync(StreamSocket socket)
         {
-            var buffer = new byte[1024*1024].AsBuffer();
+            var buffer = new byte[1024 * 1024].AsBuffer();
             await socket.InputStream.ReadAsync(buffer, buffer.Capacity, InputStreamOptions.Partial);
             return buffer.ToArray();
         }
 
-        public async Task<string> ReadFromServerAsync( StreamSocket socket )
+        public async Task<string> ReadFromServerAsync(StreamSocket socket)
         {
             string message = null;
 
@@ -62,7 +65,7 @@ namespace StoneGhost.Core.Networking
             try
             {
                 var writer = new DataWriter(Socket.OutputStream);
-                writer.WriteString(message);
+                writer.WriteString($"{message}\n");
 
                 await writer.StoreAsync();
             }

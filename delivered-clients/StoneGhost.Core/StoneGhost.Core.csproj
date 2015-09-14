@@ -117,14 +117,13 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AI\AiClient.cs" />
     <Compile Include="Networking\NetworkClient.cs" />
     <Compile Include="Networking\ServerResult.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Content Include="Properties\StoneGhost.Core.rd.xml" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="AI\" />
-  </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>
