@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Windows.Data.Json;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -22,20 +23,27 @@ namespace StoneGhost.Pages
             var host = BindAddress.Text;
             var port = BindPort.Text;
 
-            var client = new NetworkClient(host, port, new AiClient("StoneGhost"));
-            var result = await client.StartClientAsync();
-
-            _rootPage.DisplayMessage(result);
-            _clients.Add(client);
-
-            // Todo: Refactor this shit. Make each client do it's thing.
-            while (true)
+            try
             {
-                result = await client.ReadFromServerAsync(client.Socket);
-
-                var serverResult = new ServerResult(result);
+                var client = new NetworkClient(host, port, new AiClient("StoneGhost"));
+                var result = await client.StartClientAsync();
 
                 _rootPage.DisplayMessage(result);
+                _clients.Add(client);
+
+                // Todo: Refactor this shit. Make each client do it's thing.
+                while (true)
+                {
+                    result = await client.ReadFromServerAsync(client.Socket);
+
+                    var serverResult = new ServerResult(result);
+
+                    _rootPage.DisplayMessage(result);
+                }
+            }
+            catch (Exception exception)
+            {
+                _rootPage.DisplayMessage(exception.Message);
             }
         }
     }
