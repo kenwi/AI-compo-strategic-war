@@ -35,11 +35,14 @@ namespace StoneGhost.Core.Networking
 
             await SendAsync(AiClient.Name);
 
+            return await ReadAsync();
+        }
+
+        private async Task<string> ReadAsync()
+        {
             var task = ReadAsync(Socket);
             var result = await task;
-            Message = Encoding.UTF8.GetString(result);
-
-            return Message;
+            return Encoding.UTF8.GetString(result);
         }
 
         private static async Task<byte[]> ReadAsync(StreamSocket socket)
@@ -86,17 +89,21 @@ namespace StoneGhost.Core.Networking
 
         public async Task Connect(string bindAddress, string bindPort)
         {
-            _hostName = new HostName(bindAddress);
-            if (_hostName.IPInformation == null)
+            try
             {
-                throw new Exception($"Could not process hostname {_hostName}");
+                _hostName = new HostName(bindAddress);
             }
+            catch (ArgumentException)
+            {
+                return;
+            }
+
+
+            Socket = new StreamSocket();
+            Socket.Control.KeepAlive = false;
 
             try
             {
-                Socket = new StreamSocket();
-                Socket.Control.KeepAlive = false;
-
                 if (_adapter == null)
                 {
                     await Socket.ConnectAsync(_hostName, bindPort);
@@ -110,11 +117,11 @@ namespace StoneGhost.Core.Networking
                         _adapter);
                 }
             }
-            catch (Exception)
+            catch (Exception exception)
             {
-                //if (SocketError.GetStatus(exception.HResult) == SocketErrorStatus.Unknown)
+                if (SocketError.GetStatus(exception.HResult) == SocketErrorStatus.Unknown)
                 {
-                    throw new Exception($"Could not connect to host {_hostName}:{_port}");
+                    throw;
                 }
             }
         }
