@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Windows.Data.Json;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using StoneGhost.Core.AI;
@@ -15,7 +14,10 @@ namespace StoneGhost.Pages
 
         public Connection()
         {
-            this.InitializeComponent();
+            InitializeComponent();
+
+            button_Click(null, null);
+            button_Click(null, null);
         }
 
         private async void button_Click(object sender, RoutedEventArgs e)
@@ -25,20 +27,31 @@ namespace StoneGhost.Pages
 
             try
             {
-                var client = new NetworkClient(host, port, new AiClient("StoneGhost"));
-                var result = await client.StartClientAsync();
+                var aiClient = new AiClient("StoneGhost");
+                var networkClient = new NetworkClient(host, port, aiClient);
+                var result = await networkClient.StartClientAsync();
 
                 _rootPage.DisplayMessage(result);
-                _clients.Add(client);
+                _clients.Add(networkClient);
 
                 // Todo: Refactor this shit. Make each client do it's thing.
                 while (true)
                 {
-                    result = await client.ReadFromServerAsync(client.Socket);
+                    result = await networkClient.ReadFromServerAsync(networkClient.Socket);
 
+                    // Get last message from server
                     var serverResult = new ServerResult(result);
 
-                    _rootPage.DisplayMessage(result);
+                    // Load the client with the map state
+                    networkClient.MapState = serverResult.MapState;
+
+                    // Perform the AI-moves
+                    string clientResult = networkClient.AiClient.Run();
+
+                    // Send moves to server
+                    //await networkClient.SendAsync(clientResult);
+
+                    _rootPage.DisplayMessage(clientResult);
                 }
             }
             catch (Exception exception)

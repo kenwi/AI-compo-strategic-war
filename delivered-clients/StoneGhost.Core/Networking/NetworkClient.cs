@@ -18,9 +18,19 @@ namespace StoneGhost.Core.Networking
         private readonly string _host;
         private readonly string _port;
 
-        public string Message { get; private set; }
-        public StreamSocket Socket { get; private set; }
-        public AiClient AiClient { get; private set; }
+        public StreamSocket Socket { get; set; }
+        public AiClient AiClient { get; set; }
+
+        private MapState _mapState;
+        public MapState MapState
+        {
+            get { return _mapState; }
+            set
+            {
+                _mapState = value;
+                AiClient.Map = _mapState.map;
+            }
+        }
 
         public NetworkClient(string host, string port, AiClient aiClient)
         {

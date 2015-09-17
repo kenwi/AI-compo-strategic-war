@@ -118,8 +118,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AI\AiClient.cs" />
+    <Compile Include="Networking\MapState.cs" />
     <Compile Include="Networking\NetworkClient.cs" />
     <Compile Include="Networking\ServerResult.cs" />
+    <Compile Include="Networking\Spawner.cs" />
+    <Compile Include="Networking\Tile.cs" />
+    <Compile Include="Networking\Unit.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Content Include="Properties\StoneGhost.Core.rd.xml" />
   </ItemGroup>
