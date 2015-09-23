@@ -1,25 +1,42 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using Windows.Data.Json;
 using Newtonsoft.Json;
 using StoneGhost.Core.Networking;
 
 namespace StoneGhost.Core.AI
 {
-    public class ClientResult
-    {
-        public string mode;
-        public object[] moves;
-    }
-
     public class AiClient
     {
-        public AiClient(string name)
+        public  NetworkClient NetworkClient;
+
+        public string Name { get; set; }
+        public Tile[] Map { get; set; }
+
+        public AiClient()
         {
-            Name = $"name {name}";
+
         }
 
-        public string Name { get; private set; }
-        public Tile[] Map { get; set; }
+        public AiClient(string name)
+        {
+            Name = name;
+        }
+
+        public async Task Tick()
+        {
+            await NetworkClient.SendAsync("Foo"); // Will and should return error as of now.
+            var result = NetworkClient.ReadAsync(); 
+        }
+
+        public async Task<string> LoginAsync()
+        {
+            await NetworkClient.Connect();
+
+            await NetworkClient.SendAsync($"name {Name}");
+
+            return await NetworkClient.ReadAsync();
+        }
 
         // todo: make some sense.
         public string Run()
@@ -43,20 +60,12 @@ namespace StoneGhost.Core.AI
                         }
                     }
                 };
-
-                /*
-                var clientResult = new ClientResult
-                {
-                    mode = "standard",
-                    moves = new object[]
-                    {
-                        unit.position[0], unit.position[1], unit.unit.PerformMove()
-                    }
-                };*/
                 result = JsonConvert.SerializeObject(clientResult);
             }
 
             return result;
         }
+        
+
     }
 }

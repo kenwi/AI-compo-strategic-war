@@ -19,36 +19,14 @@ namespace StoneGhost.Core.Networking
         private readonly string _port;
 
         public StreamSocket Socket { get; set; }
-        public AiClient AiClient { get; set; }
 
-        private MapState _mapState;
-        public MapState MapState
-        {
-            get { return _mapState; }
-            set
-            {
-                _mapState = value;
-                AiClient.Map = _mapState.map;
-            }
-        }
-
-        public NetworkClient(string host, string port, AiClient aiClient)
+        public NetworkClient(string host, string port)
         {
             _host = host;
             _port = port;
-            AiClient = aiClient;
         }
-
-        public async Task<string> StartClientAsync()
-        {
-            await Connect(_host, _port);
-
-            await SendAsync(AiClient.Name);
-
-            return await ReadAsync();
-        }
-
-        private async Task<string> ReadAsync()
+        
+        public async Task<string> ReadAsync()
         {
             var task = ReadAsync(Socket);
             var result = await task;
@@ -96,6 +74,10 @@ namespace StoneGhost.Core.Networking
             Socket.Dispose();
         }
 
+        public async Task Connect()
+        {
+            await Connect(_host, _port);
+        }
 
         public async Task Connect(string bindAddress, string bindPort)
         {
@@ -127,11 +109,11 @@ namespace StoneGhost.Core.Networking
                         _adapter);
                 }
             }
-            catch (Exception exception)
+            catch (Exception)
             {
-                if (SocketError.GetStatus(exception.HResult) == SocketErrorStatus.Unknown)
+                //if (SocketError.GetStatus(exception.HResult) == SocketErrorStatus.Unknown)
                 {
-                    throw;
+                    throw new Exception($"Could not connect to {_host}:{_port}");
                 }
             }
         }
