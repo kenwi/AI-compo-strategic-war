@@ -62,7 +62,7 @@ namespace StoneGhost.Core.Networking
             }
             catch (Exception exception)
             {
-                if (SocketError.GetStatus(exception.HResult) == SocketErrorStatus.Unknown)
+                //if (SocketError.GetStatus(exception.HResult) == SocketErrorStatus.Unknown)
                 {
                     throw; // TODO: rewrite
                 }

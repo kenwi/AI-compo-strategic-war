@@ -10,14 +10,14 @@ namespace StoneGhost.Pages
     public sealed partial class Connection : Page
     {
         readonly MainPage _rootPage = MainPage.CurrentPage;
-        readonly List<NetworkClient> _clients = new List<NetworkClient>();
+        readonly List<AiClient> _clients = new List<AiClient>();
 
         public Connection()
         {
             InitializeComponent();
 
             button_Click(null, null);
-            //button_Click(null, null);
+            button_Click(null, null);
         }
 
         private async void button_Click(object sender, RoutedEventArgs e)
@@ -34,10 +34,14 @@ namespace StoneGhost.Pages
                 };
                 var result = await aiClient.LoginAsync();
                 _rootPage.DisplayMessage(result);
+                _clients.Add(aiClient);
 
-                while (true)
+                while (_clients.Count >= 2)
                 {
-                    await aiClient.Tick();
+                    foreach (var client in _clients)
+                    {
+                        await client.Tick();
+                    }
                 }
             }
             catch (Exception exception)

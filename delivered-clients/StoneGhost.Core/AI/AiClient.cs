@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Windows.Data.Json;
 using Newtonsoft.Json;
@@ -23,10 +24,35 @@ namespace StoneGhost.Core.AI
             Name = name;
         }
 
-        public async Task Tick()
+        public async Task<string> Tick()
         {
-            await NetworkClient.SendAsync("Foo"); // Will and should return error as of now.
-            var result = NetworkClient.ReadAsync(); 
+            try
+            {
+                var result = await NetworkClient.ReadAsync();
+                var mapState = JsonConvert.DeserializeObject<MapState>(result);
+
+                var units = mapState.map.Where(tile => tile.unit != null);
+                var clientResult = new
+                {
+                    mode = "standard",
+                    moves = new object[]
+                    {
+                        new object[]
+                        {
+                            units.ToArray()[0].position[0], units.ToArray()[0].position[1], units.ToArray()[0].unit.PerformMove()
+                        }
+                    }
+                };
+                result = JsonConvert.SerializeObject(clientResult);
+
+                await NetworkClient.SendAsync(result);
+
+                return result;
+            }
+            catch (Exception exception)
+            {
+                throw new Exception(exception.Message);
+            }
         }
 
         public async Task<string> LoginAsync()
