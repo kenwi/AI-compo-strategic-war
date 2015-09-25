@@ -29,8 +29,12 @@ namespace StoneGhost.Core.AI
             try
             {
                 var result = await NetworkClient.ReadAsync();
-                var mapState = JsonConvert.DeserializeObject<MapState>(result);
 
+                var start = DateTime.Now;
+                var mapState = JsonConvert.DeserializeObject<MapState>(result);
+                var time = DateTime.Now - start;
+                
+                /*
                 var units = mapState.map.Where(tile => tile.unit != null);
                 var clientResult = new
                 {
@@ -44,8 +48,8 @@ namespace StoneGhost.Core.AI
                     }
                 };
                 result = JsonConvert.SerializeObject(clientResult);
-
-                await NetworkClient.SendAsync(result);
+                */
+                await NetworkClient.SendAsync("{\"mode\":\"standard\",\"moves\":[[36,80,\"east\"]]}");
 
                 return result;
             }

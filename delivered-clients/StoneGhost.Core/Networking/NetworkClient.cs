@@ -18,7 +18,7 @@ namespace StoneGhost.Core.Networking
         private readonly string _host;
         private readonly string _port;
 
-        public StreamSocket Socket { get; set; }
+        public StreamSocket Socket;
 
         public NetworkClient(string host, string port)
         {
@@ -54,10 +54,10 @@ namespace StoneGhost.Core.Networking
         public async Task SendAsync(string message)
         {
             try
-            {
+            { 
                 var writer = new DataWriter(Socket.OutputStream);
                 writer.WriteString($"{message}\n");
-
+                
                 await writer.StoreAsync();
             }
             catch (Exception exception)
@@ -89,7 +89,6 @@ namespace StoneGhost.Core.Networking
             {
                 return;
             }
-
 
             Socket = new StreamSocket();
             Socket.Control.KeepAlive = false;

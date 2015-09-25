@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Windows.Storage.Streams;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using StoneGhost.Core.AI;
@@ -10,14 +11,14 @@ namespace StoneGhost.Pages
     public sealed partial class Connection : Page
     {
         readonly MainPage _rootPage = MainPage.CurrentPage;
-        readonly List<AiClient> _clients = new List<AiClient>();
+         List<AiClient> _clients = new List<AiClient>();
 
         public Connection()
         {
             InitializeComponent();
 
-            button_Click(null, null);
-            button_Click(null, null);
+            //button_Click(null, null);
+            //button_Click(null, null);
         }
 
         private async void button_Click(object sender, RoutedEventArgs e)
@@ -29,7 +30,7 @@ namespace StoneGhost.Pages
             {
                 var aiClient = new AiClient
                 {
-                    Name = "StoneGhost",
+                    Name = "StoneGhost" + _clients.Count,
                     NetworkClient = new NetworkClient(host, port)
                 };
                 var result = await aiClient.LoginAsync();
@@ -41,6 +42,12 @@ namespace StoneGhost.Pages
                     foreach (var client in _clients)
                     {
                         await client.Tick();
+
+                        /*var writer = new DataWriter(client.NetworkClient.Socket.OutputStream);
+                        writer.WriteString("Foobar");
+
+                        await writer.StoreAsync();
+                        */                
                     }
                 }
             }
